@@ -376,14 +376,14 @@ class slabdata:
         if top_fname is not None:
             top_fname = top_fname
         else:
-            top_fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_top.in")
+            top_fname = str("SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_top.in")
         top = np.genfromtxt(top_fname)
         top[:,0] = top[:,0]-360 # for some reason, top and base files are defined in +degrees east, unlike the netcdf files
 
         if base_fname is not None:
             base_fname = base_fname
         else:
-            base_fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_base.in")
+            base_fname = str("SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_base.in")
         base = np.genfromtxt(base_fname)
         base = np.flipud(base)
         base[:,0] = base[:,0]-360
@@ -396,7 +396,7 @@ class slabdata:
         if fname is not None:
             fname = fname
         else:
-            fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_clip.grd")
+            fname = str("SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_clip.grd")
         nc_data = load_slab_nc(fname)
         x = nc_data['x_wested']
         y = nc_data['y']
@@ -410,13 +410,13 @@ class slabdata:
         if s_fname is not None:
             s_fname = s_fname
         else:
-            s_fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_strclip.grd")
+            s_fname = str("SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_strclip.grd")
             strike = load_slab_nc(s_fname)['z']
 
         if d_fname is not None:
             d_fname = d_fname
         else:
-            d_fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_dipclip.grd")
+            d_fname = str("SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_dipclip.grd")
             dip = load_slab_nc(d_fname)['z']
         return strike, dip
 

@@ -1,0 +1,12 @@
+€}q(UKC:\Users\slaselle@usgs.gov\Documents\GitHub\tsunami_maker\datatools\fixdata]q(U
+filterdataqUfillbaddataqUfindbadindicesqeU
+slab_tools]q(Udownload_fileqUload_slab_xyzqUbasemap_lonlat_gridq	Ubasemap_lccq
+Usave2netcdfqUclosest_on_lineqUtop2bot_edgeqUdistance_on_unit_sphereqUendpoint_from_bearing_distqUget_slab_dataqUslabdataqUload_slab_ncqeUpyclaw.dtopotools]q(Uplot_dz_contoursqUread_subfault_model_ucsbqUradqUplot_subfaults_depthqUtest_rise_fractionqUset_fault_xyqUmake_dtopo_from_subfaultsqUrrqUread_subfault_modelqUplot_dz_colorsqUwrite_dzqU	lat2meterqUDTopoq Urise_fractionq!U
+read_dtopoq"Uplot_subfaultsq#Uread_subfault_model_csvq$Uwrite_dtopo_headerq%eU
+dtopotools]q&(Uplot_dz_contoursq'Uread_subfault_model_ucsbq(Uradq)Uplot_subfaults_depthq*Utest_rise_fractionq+Uset_fault_xyq,Umake_dtopo_from_subfaultsq-Urrq.Uread_subfault_modelq/Uplot_dz_colorsq0Uwrite_dzq1U	lat2meterq2UDTopoq3Urise_fractionq4U
+read_dtopoq5Uplot_subfaultsq6Uread_subfault_model_csvq7Uwrite_dtopo_headerq8eUDC:\Users\slaselle@usgs.gov\Documents\GitHub\tsunami_maker\dtopotools]q9(Uplot_dz_contoursq:Uread_subfault_model_ucsbq;Uradq<Uplot_subfaults_depthq=Utest_rise_fractionq>Uset_fault_xyq?Umake_dtopo_from_subfaultsq@UrrqAUread_subfault_modelqBUplot_dz_colorsqCUwrite_dzqDU	lat2meterqEUDTopoqFUrise_fractionqGU
+read_dtopoqHUplot_subfaultsqIUread_subfault_model_csvqJUwrite_dtopo_headerqKeUokada2]qL(U
+filtermaskqMUdip_slipqNU
+filterdataqOUpoissonqPUstrike_slipqQUokadamapqReUDC:\Users\slaselle@usgs.gov\Documents\GitHub\tsunami_maker\slab_tools]qS(Udownload_fileqTUload_slab_xyzqUUbasemap_lonlat_gridqVUbasemap_lccqWUsave2netcdfqXUclosest_on_lineqYUtop2bot_edgeqZUdistance_on_unit_sphereq[Uendpoint_from_bearing_distq\Uget_slab_dataq]Uslabdataq^Uload_slab_ncq_eUCC:\Users\slaselle@usgs.gov\Documents\GitHub\tsunami_maker\colormaps]q`(Uschlieren_redsqaUmake_colormapqbUyellow_red_blueqcUall_light_blueqdUred_yellow_blueqeUall_light_redqfUall_light_greenqgUred_white_blueqhUmake_amrcolorsqiU
+white_blueqjUschlieren_colormapqkU	all_whiteqlUall_light_yellowqmU
+showcolorsqnUschlieren_bluesqoUblue_yellow_redqpU	white_redqqUblue_white_redqrUschlieren_greensqsUschlieren_graysqteu.
