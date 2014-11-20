@@ -15,6 +15,7 @@ import tempfile, logging
 from math import asin, acos, atan2, cos, sin, pi
 from shapely.geometry import Point, MultiPoint, Polygon, LineString
 import scipy.ndimage
+from PyQt4 import QtGui
 
 #####################################################################################
 #Downloads file from input url
@@ -231,7 +232,8 @@ def endpoint_from_bearing_dist(bearing, dist, lon1, lat1):
     lon1, lat1 = rad2deg(rlon1), rad2deg(rlat1)
     lon2, lat2 = rad2deg(rlon2), rad2deg(rlat2)
 
-    return {'lon1': lon1, 'lat1': lat1, 'lon2': lon2, 'lat2': lat2, 'dist': dist, 'bearing':bearing}
+    return {'lon1': lon1, 'lat1': lat1, 'lon2': lon2, 'lat2': lat2, 
+            'dist': dist, 'bearing':bearing}
 #####################################################################################
 
 #####################################################################################
@@ -284,7 +286,8 @@ def basemap_lcc(x,y,resolution = 'h'):
 ##                      lat_0 = lat_0, lon_0 = lon_0)
         m = Basemap(projection = 'lcc', resolution = 'h', llcrnrlon = llcrnrlon, llcrnrlat = llcrnrlat, urcrnrlon = urcrnrlon, urcrnrlat = urcrnrlat, lat_1 = lat_1, lon_0 = lon_0, lat_0 = lat_0)
 
-        print('LAMBERT CONFORMAL PROJECTION:\nMap Width = %s\nMap Height = %s\nlon_0, lat_0 = %s, %s\nlat1 = %s' % (mapWidth,mapHeight,lon_0,lat_0,lat_1))
+        print('LAMBERT CONFORMAL PROJECTION:\nMap Width = %s\nMap Height = %s\nlon_0, lat_0 = %s, %s\nlat1 = %s' 
+                % (mapWidth,mapHeight,lon_0,lat_0,lat_1))
         return m
 #####################################################################################
 
@@ -316,7 +319,7 @@ def load_slab_nc(fname):
     x = np.ma.array(ncFile.variables['x'])  # longitudes in degrees east
     x_wested = x-360.                       # longitudes in degrees west
     y = np.ma.array(ncFile.variables['y'])  # latitude
-    z = np.ma.array(ncFile.variables['z'])  # plate interface depth [km]
+    z = np.array(ncFile.variables['z'])  # plate interface depth [km]
     z = np.ma.masked_invalid(z)             # mask nans
 
     return {'x':x, 'x_wested':x_wested, 'y':y, 'z':z}
@@ -344,7 +347,8 @@ def closest_on_line(line, lon, lat):
 def top2bot_edge(toplon,toplat,botlons,botlats):
     """Given a point (toplon, toplat), determine the lon, lat of the nearest point on the line defined by (botlons, botlats)m using
     a great circle distance function (slab_tools.distance_on_unit_sphere)"""
-    distances = [distance_on_unit_sphere(toplat,toplon,botlats[i],botlons[i]) for i in range(0,botlons.size)]
+    distances = [distance_on_unit_sphere(toplat,toplon,botlats[i],botlons[i]) 
+            for i in range(0,botlons.size)]
     index = np.where(distances == np.min(distances))
 
     return botlons[index], botlats[index]
@@ -358,17 +362,40 @@ def save2netcdf(fname,x,y,data):
 #####################################################################################
 
 #####################################################################################
-class slabdata:
-    top = ''
-    base = ''
-    x = ''
-    y = ''
-    depth = ''
-    strike = ''
-    dip = ''
+class slabfolderdialog(QtGui.QMainWindow):
+    def __init__(self):
+        super(slabfolderdialog, self).__init__()
+        fol_name = []
+        self.initUI()
+    def initUI(self):
+        self.setGeometry(300,300,350,300)
+        self.setWindowTitle('Select directory containing SLAB regions')
+        self.openfolderDialog()
+    def openfolderDialog(self):
+        fol_name = QtGui.QFileDialog.getExistingDirectory(self,'select directory',
+                os.getcwd())
+        self.fol_name = fol_name
 
-    def __init__(self,loc_name):
-        self.loc_name = loc_name
+
+#####################################################################################
+
+#####################################################################################
+class slabdata:
+    def __init__(self,loc_name = None, directory = None):
+        if not loc_name:
+            try:
+                name = str(input("\nType in region name (i.e. 'alu' for Aleutians):"))
+                self.loc_name = name
+            except ValueError:
+                print('\nRestart script. Input region name\n')
+        else:
+            self.loc_name = loc_name
+        if not directory:
+            app = QtGui.QApplication(sys.argv)
+            folderdialog = slabfolderdialog()
+            self.directory = folderdialog.fol_name
+        else:
+            self.directory = directory
 
 
     def load_top_base(self, top_fname=None, base_fname=None):
@@ -376,19 +403,22 @@ class slabdata:
         if top_fname is not None:
             top_fname = top_fname
         else:
-            top_fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_top.in")
+            top_fname = os.path.abspath(os.path.join(self.directory,
+                str("SLAB1.0_%s_data/%s" % (self.loc_name, self.loc_name) + "_top.in")))
         top = np.genfromtxt(top_fname)
         top[:,0] = top[:,0]-360 # for some reason, top and base files are defined in +degrees east, unlike the netcdf files
 
         if base_fname is not None:
             base_fname = base_fname
         else:
-            base_fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_base.in")
+            base_fname = os.path.abspath(os.path.join(self.directory,
+                str("SLAB1.0_%s_data/%s" % (self.loc_name, self.loc_name) + "_base.in")))
         base = np.genfromtxt(base_fname)
         base = np.flipud(base)
         base[:,0] = base[:,0]-360
 
-        return top, base
+        self.top = top
+        self.base = base
 
 
     def load_nc_depth(self, fname = None):
@@ -396,13 +426,17 @@ class slabdata:
         if fname is not None:
             fname = fname
         else:
-            fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_clip.grd")
+            fname =  os.path.abspath(os.path.join(self.directory,
+                str("SLAB1.0_%s_data/%s" % (self.loc_name, self.loc_name) 
+                    + str("_slab1.0_clip.grd"))))
         nc_data = load_slab_nc(fname)
         x = nc_data['x_wested']
         y = nc_data['y']
         depth = nc_data['z']
 
-        return x, y, depth
+        self.x = x
+        self.y = y
+        self.depth =depth
 
 
     def load_nc_strike_dip(self, s_fname = None, d_fname = None):
@@ -410,29 +444,36 @@ class slabdata:
         if s_fname is not None:
             s_fname = s_fname
         else:
-            s_fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_strclip.grd")
+            s_fname = os.path.abspath(os.path.join(self.directory,
+                str("SLAB1.0_%s_data/%s" % (self.loc_name, self.loc_name) + 
+                    str("_slab1.0_strclip.grd"))))
             strike = load_slab_nc(s_fname)['z']
 
         if d_fname is not None:
             d_fname = d_fname
         else:
-            d_fname = str("i:\\Aleutians\\data\\SLAB\\SLAB1.0_%s_data\\%s" % (self.loc_name, self.loc_name)) + str("_slab1.0_dipclip.grd")
+            d_fname = os.path.abspath(os.path.join(self.directory,
+                str("SLAB1.0_%s_data/%s" % (self.loc_name, self.loc_name) 
+                    +str("_slab1.0_dipclip.grd"))))
             dip = load_slab_nc(d_fname)['z']
-        return strike, dip
+        self.strike = strike
+        self.dip = dip
 
 
     # make a function to plot the contours so we don't have to write this out every time
     def plot_slab_contours(self):
         fig = plt.figure(figsize=(16,8))
         clevs=np.arange(-300,0,10)
-        depth_contours = plt.contour(self.x,self.y,self.depth,clevs)
+        x,y = np.meshgrid(self.x,self.y)
+        depth_contours = plt.contour(x,y,self.depth,clevs)
         cbar = plt.colorbar(depth_contours)
         cbar.set_label('depth [km]')
         plt.grid()
         return
 
     def extract_depth_line(self, desired_depth):
-        contour = plt.contour(self.x, self.y, self.depth, [desired_depth])
+        x,y = np.meshgrid(self.x,self.y)
+        contour = plt.contour(x, y, self.depth, [desired_depth])
         plt.close()
         paths = contour.collections[0].get_paths() # get the paths and then find the x,y points of the contour
         vertices = []
