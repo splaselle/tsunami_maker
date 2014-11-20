@@ -15,7 +15,7 @@ lat2meter = rr*rad
 
 ####################################################################################################
 def read_subfault_model(fname, columns, units=None, \
-                    defaults = {'latlong_location': 'centroid'}, \
+                    defaults = {'latlong_location': 'top center'}, \
                     skiprows=0, delimiter=None):
     """
     Read a subfault model and return a list of dictionaries specifying the
@@ -119,7 +119,7 @@ def read_subfault_model(fname, columns, units=None, \
         Mo = mu*total_slip*(10**6)  # 0.1 factor to convert to Nm
         Mw = 2./3. * np.log10(Mo) - 10.7
         print("With rigidity mu = %6.1e, moment magnitude is Mw = %5.2f" % (mu,Mw))
-    return subfaults
+    return subfaults, Mw
 ####################################################################################################
 
 ####################################################################################################
@@ -203,7 +203,7 @@ def plot_subfaults(subfaults,plot_centerline=False, slip_color=False, \
     if slip_color:
         cmap_slip = plt.cm.jet
         if cmax_slip is None:
-            cmax_slip = max_slip
+            cmax_slip = max_slip+0.1
         if cmin_slip is None:
             cmin_slip = 0.
         if test_random:
