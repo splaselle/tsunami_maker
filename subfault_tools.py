@@ -359,6 +359,19 @@ def slip_wang(x,w,s0,b,q):
     slip = s0*delta*(1+np.sin(np.pi*delta**b))
 
     return slip
+
+####################################################################################################
+
+####################################################################################################
+# calculate slip distribution as function of downdip distance from upper edge and width of 
+# seismogenic zone. Scales to the same average slip as UDS model with b = 0.3, q = 0.5. 
+def slip_tohoku(x, w, s0):
+	x_prime = x/w
+
+	slip = 0.27115*s0*(np.exp(2*x_prime) - 1)
+
+	return slip
+
 ####################################################################################################
 
 ####################################################################################################
@@ -441,4 +454,5 @@ def load_tt3(fname):
     return times, dz_arrays, {'ncols':ncols, 'nrows':nrows, 'ntimes':ntimes, 'xlower':xlower, 'ylower':ylower,\
                               't0':t0, 'dx':dx, 'dy':dy, 'dt':dt}
 ####################################################################################################
+
 
