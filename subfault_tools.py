@@ -139,7 +139,7 @@ def set_fault_xy(faultparams):
     x0 = longitude
     y0 = latitude
 
-    if location == "top center":
+    if location =="top_center":
         depth_top = depth
         depth_centroid = depth +0.5*width*np.sin(ang_dip)
         depth_bottom = depth + width*np.sin(ang_dip)
@@ -155,8 +155,39 @@ def set_fault_xy(faultparams):
         x_centroid = x0+0.5*del_x
         y_centroid = y0+0.5*del_y
 
+    elif location =="centroid":
+        depth_top = depth - 0.5 * width * np.sin(dip * rad)
+        depth_centroid = depth 
+        depth_bottom = depth + width * np.sin(dip * rad)
+
+        #convert fault origin from top of fault plane to bottom:
+        del_x = width*np.cos(ang_dip)*np.cos(ang_strike) / (lat2meter*np.cos(y0*rad))
+        del_y = -width*np.cos(ang_dip)*np.sin(ang_strike) / lat2meter
+
+        x_top = x0 + 0.5 * del_x
+        y_top = y0 + 0.5 * del_y
+        x_bottom = x0 - 0.5 * del_x
+        y_bottom = y0 - 0.5 * del_y
+        x_centroid = x0
+        y_centroid = y0
+    elif location =="top_left_corner":
+        depth_top = depth
+        depth_centroid = depth + 0.5*width*np.sin(ang_dip)
+        depth_bottom = depth + width*np.sin(ang_dip)
+
+        x_top = x0+(0.5*length*np.sin(ang_strike))/(lat2meter*np.cos(y0*rad))
+        y_top = y0+(0.5*length*np.cos(ang_strike))/lat2meter
+
+        del_x = width*np.cos(ang_dip)*np.cos(ang_strike) / (lat2meter*np.cos(y0*rad))
+        del_y = -width*np.cos(ang_dip)*np.sin(ang_strike) / lat2meter
+
+        x_bottom = x_top+del_x
+        y_bottom = y_top+del_y
+        x_centroid = x_top+0.5*del_x
+        y_centroid = y_top+0.5*del_y
+
     else:
-        raise ValueError("Unrecognized latlong_location: %s.\nPlease use 'top center'" % location)
+        raise ValueError("Unrecognized latlong_location: %s.\nPlease use 'top_center' or 'centroid'" % location)
 
     #distance along strike from center of an edge to corner:
     dx2 = 0.5*length*np.sin(ang_strike) / (lat2meter*np.cos(y_bottom*rad))
@@ -174,9 +205,9 @@ x_corners y_corners""".split()
 
 ####################################################################################################
 def plot_subfaults_basemap(subfaults, basemap,
-                           plot_centerline=False, slip_color=False,
+                           plot_centerline=False, slip_color=False, cmap = mpl.cm.jet,
                            cmax_slip=None, cmin_slip=None, plot_rake=False,
-                           xylim=None):
+                           xylim=None, alpha = 1):
     """
     Plot each subfault projected onto the surface.
     Using a basemap projection defined by 'basemap'
@@ -190,7 +221,7 @@ def plot_subfaults_basemap(subfaults, basemap,
     print("Max slip, Min slip: ",max_slip, min_slip)
 
     if slip_color:
-        cmap_slip = plt.cm.jet
+        cmap_slip = cmap
         if cmax_slip is None:
             cmax_slip = max_slip+0.1
         if cmin_slip is None:
@@ -242,7 +273,7 @@ def plot_subfaults_basemap(subfaults, basemap,
             s = min(1, max(0, (slip-cmin_slip)/(cmax_slip-cmin_slip)))
             c = cmap_slip(s)
             x_corners_m, y_corners_m = basemap(x_corners,y_corners)
-            plt.fill(x_corners_m,y_corners_m,color=c,edgecolor='none')
+            plt.fill(x_corners_m,y_corners_m,color=c,edgecolor='none', alpha = alpha)
         else:
             basemap.plot(x_corners, y_corners, 'k-', latlon=True)
 
@@ -254,7 +285,7 @@ def plot_subfaults_basemap(subfaults, basemap,
     plt.xticks(rotation=80)
     if xylim is not None:
         plt.axis(xylim)
-    plt.title('Fault planes')
+#    plt.title('Fault planes')
 ####################################################################################################
 
 ####################################################################################################

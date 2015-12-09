@@ -698,3 +698,4 @@ def plot_dz_colors(x,y,dz,cmax_dz=None,dz_interval=None):
     plt.ticklabel_format(format='plain',useOffset=False)
     #plt.xticks(rotation=20)
     plt.title('Seafloor deformation')
+
